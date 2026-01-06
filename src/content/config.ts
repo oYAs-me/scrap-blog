@@ -7,11 +7,13 @@ const articlesCollection = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
-    description: z.string(),
     pubDate: z.date(),
+    description: z.string(),
+    tags: z.array(z.string()),
+    
+    // 以下は任意項目
     updatedDate: z.date().optional(),
     heroImage: z.string().optional(), // 記事の見栄え用
-    tags: z.array(z.string()),
     
     // ポートフォリオとしての機能
     techStack: z.array(z.string()).optional(), // 使用技術
@@ -26,8 +28,10 @@ const scrapsCollection = defineCollection({
   schema: z.object({
     title: z.string(),
     pubDate: z.date(),
+
+    // 以下は任意項目
     updatedDate: z.date().optional(),
-    tags: z.array(z.string()).optional(), // タグ付けは任意
+    tags: z.array(z.string()).optional(),
     
     // 関連リンク（Scrapbox的なつながり用）
     refs: z.array(z.string().url()).optional(),

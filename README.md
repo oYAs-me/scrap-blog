@@ -58,7 +58,6 @@ scrap-blog/
 │   │   ├── index.astro     # トップページ (Feed + Random Notes)
 │   │   ├── articles/[slug].astro # Blog個別ページ
 │   │   ├── scraps/[slug].astro   # Scrapbox個別ページ
-│   │   ├── tweets/[...page].astro # SNS個別ページ
 │   │   └── rss.xml.js
 │   └── styles/
 │       └── global.css      # 全体スタイル (CSS Variables活用)

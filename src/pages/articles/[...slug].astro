@@ -1,0 +1,45 @@
+---
+// src/pages/articles/[...slug].astro
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// 動的ルーティングのためのパス生成
+export async function getStaticPaths() {
+  // articlesコレクションから全投稿を取得
+  const posts = await getCollection('articles');
+  return posts.map(post => ({
+    params: { slug: post.slug },
+    props: post,
+  }));
+}
+
+// Propsの型定義（明示的にarticlesコレクションのエントリ型を使用）
+type Props = CollectionEntry<'articles'>;
+
+const post = Astro.props;
+const { Content } = await post.render();
+---
+
+<BaseLayout title={post.data.title}>
+  <article>
+    <header>
+      <h1>{post.data.title}</h1>
+      <p style="color: #666;">
+        {post.data.pubDate.toLocaleDateString('ja-JP')}
+        {/* 技術スタックがあれば表示 */}
+        {post.data.techStack && (
+          <span> | {post.data.techStack.join(', ')}</span>
+        )}
+      </p>
+      {/* ヒーローイメージがあれば表示 */}
+      {post.data.heroImage && (
+        <img src={post.data.heroImage} alt="" style="max-width: 100%;" />
+      )}
+    </header>
+    
+    <div class="content">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
