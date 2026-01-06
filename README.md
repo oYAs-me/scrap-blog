@@ -55,10 +55,16 @@ scrap-blog/
 │   │   ├── BaseLayout.astro
 │   │   └── NoteLayout.astro
 │   ├── pages/              # ルーティング
-│   │   ├── index.astro     # トップページ (Feed + Random Notes)
-│   │   ├── articles/[slug].astro # Blog個別ページ
-│   │   ├── scraps/[slug].astro   # Scrapbox個別ページ
-│   │   └── rss.xml.js
+│   │   ├── index.astro     # トップページ (Feed + Random Notes + SNS Preview)
+│   │   ├── articles/
+│   │   │   ├── [...slug].astro # Blog個別ページ
+│   │   ｜   └── index.astro     # Blog一覧ページ
+│   │   ├── scraps/
+│   │   │   ├── [...slug].astro # Scrapbox個別ページ
+│   │   │   └── index.astro     # Scrapbox一覧ページ
+│   │   ├── tweets/
+│   │   │   └── index.astro     # SNSモードタイムラインページ
+│   │   └── rss.xml.js       # RSSフィード生成
 │   └── styles/
 │       └── global.css      # 全体スタイル (CSS Variables活用)
 ├── astro.config.mjs        # Astro設定 (remark-wiki-link等のプラグイン設定)
