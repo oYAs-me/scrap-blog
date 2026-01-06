@@ -12,15 +12,15 @@ A personal scrapbox-like log or blog and digital garden built with Astro. / Astr
 
 ## 機能
 
-### A. SNSモード (Logs)
+### A. Blog/GitHubモード (Articles)
 
-- **役割:** 思考のフロー、作業ログ、独り言。
+- **役割:** 完成された成果物、技術的なショーケース。
 - **特徴:**
-  - タイトル不要（日付がID）。
-  - 時系列（降順）のタイムライン表示。
-  - Obsidian-Memos likeな表示や管理
+  - **MDXコンポーネント:** Reactコンポーネントを埋め込み可能。
+  - **GitHub連携:** 特定リポジトリのRelease Note引用、コミットのDiff表示、言語使用率のグラフ化など。
+  - OGP画像をリッチに生成。
 
-### B. Scrapboxモード (Notes)
+### B. Scrapboxモード (Scraps)
 
 - **役割:** 知識のネットワーク、概念の整理。
 - **特徴:**
@@ -28,13 +28,13 @@ A personal scrapbox-like log or blog and digital garden built with Astro. / Astr
   - **ステータス管理:** 記事の成熟度を明示（🌱 Seed / 🌿 Bud / 🌲 Evergreen）。
   - **Backlinks:** その記事にリンクしている記事の一覧を自動表示。
 
-### C. Blog/GitHubモード (Projects/Articles)
+### C. SNSモード (Tweets)
 
-- **役割:** 完成された成果物、技術的なショーケース。
+- **役割:** 思考のフロー、作業ログ、独り言。
 - **特徴:**
-  - **MDXコンポーネント:** Reactコンポーネントを埋め込み可能。
-  - **GitHub連携:** 特定リポジトリのRelease Note引用、コミットのDiff表示、言語使用率のグラフ化など。
-  - OGP画像をリッチに生成。
+  - タイトル不要（日付がID）。
+  - 時系列（降順）のタイムライン表示。
+  - Obsidian-Memos likeな表示や管理
 
 ## ディレクトリ構成案
 
@@ -48,16 +48,17 @@ scrap-blog/
 │   │   └── WikiLink.astro      # 内部リンク処理
 │   ├── content/            # 記事データ (Markdown/MDX)
 │   │   ├── config.ts       # スキーマ定義 (ここでLogs/Notes/Projectsを定義)
-│   │   ├── logs/           # SNSモード用 (ファイル名は日付: 2026-01-05.md)
-│   │   ├── notes/          # Scrapboxモード用
-│   │   └── projects/       # Blogモード用
+│   │   ├── articles/       # Blogモード用
+│   │   ├── scraps/         # Scrapboxモード用
+│   │   └── tweets/         # SNSモード用 (ファイル名は日付: 2026-01-05.md)
 │   ├── layouts/            # ページレイアウト
 │   │   ├── BaseLayout.astro
 │   │   └── NoteLayout.astro
 │   ├── pages/              # ルーティング
 │   │   ├── index.astro     # トップページ (Feed + Random Notes)
-│   │   ├── logs/[...page].astro # ログ過去ログ
-│   │   ├── notes/[slug].astro   # ノート個別ページ
+│   │   ├── articles/[slug].astro # Blog個別ページ
+│   │   ├── scraps/[slug].astro   # Scrapbox個別ページ
+│   │   ├── tweets/[...page].astro # SNS個別ページ
 │   │   └── rss.xml.js
 │   └── styles/
 │       └── global.css      # 全体スタイル (CSS Variables活用)
