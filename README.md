@@ -110,23 +110,30 @@ graph TD
         P3_MDX --> P3_Diff
     end
 
-    %% Track C: インフラ構築
-    subgraph TrackInfra ["Track C: Infra Ops"]
+    %% Track C: SNSモード開発
+    subgraph TrackTwitter ["Track C: SNS Mode"]
         direction TB
-        P4_Apache["⚙️ Apache Config<br>(Vhost setup)<br>⏱️ 1h"]:::infra
-        P4_CI["🤖 GitHub Actions<br>(Build & Deploy)<br>⏱️ 3h"]:::infra
+        P4_Memos["📝 Memos Parser<br>Parse list items<br>⏱️ 3h"]:::twitter
+        P4_Tweets["✅ Tweets Page<br>Timeline view<br>⏱️ 3h"]:::twitter
+
+        P4_Memos --> P4_Tweets
+    end
+
+    %% Track D: インフラ構築
+    subgraph TrackInfra ["Track D: Infra Ops"]
+        direction TB
+        P5_Apache["⚙️ Apache Config<br>(Vhost setup)<br>⏱️ 1h"]:::infra
+        P5_CI["🤖 GitHub Actions<br>(Build & Deploy)<br>⏱️ 3h"]:::infra
         
-        P4_Apache --> P4_CI
+        P5_Apache --> P5_CI
     end
 
-    %% Track D: SNSモード開発
-    subgraph TrackTwitter ["Track D: SNS Mode"]
-        direction TB
-        P5_Memos["📝 Memos Parser<br>Parse list items<br>⏱️ 3h"]:::twitter
-        P5_Tweets["✅ Tweets Page<br>Timeline view<br>⏱️ 3h"]:::twitter
+    %% すべてのTrackをmerge
+    Merge["🔀 Merge Tracks<br>!MERGE!<br>⏱️ ??h"]:::base
 
-        P5_Memos --> P5_Tweets
-    end
+    P2_Status --> Merge
+    P3_Diff --> Merge
+    P4_Tweets --> Merge
 
     %% --- Phase 6: 合流と仕上げ ---
     subgraph Phase6 ["Phase 6: Design & Polish"]
@@ -139,16 +146,13 @@ graph TD
     %% 依存関係
     P1_ListPages --> P2_Wiki
     P1_ListPages --> P3_MDX
-    P1_ListPages --> P4_Apache
-    P1_Schema --> P5_Memos
+    P1_Schema --> P4_Memos
+    P1_ListPages --> P5_Apache
 
-    %% 合流
-    P2_Status --> P6_Design
-    P3_Diff --> P6_Design
-    P5_Tweets --> P6_Design
+    Merge --> P6_Design
     
     %% リリース条件
-    P4_CI --> Goal
+    P5_CI --> Goal
     P6_Design --> Goal
 
 ```
