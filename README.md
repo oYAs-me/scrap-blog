@@ -72,20 +72,22 @@ scrap-blog/
 graph TD
     %% クラス定義
     classDef base fill:#f9f9f9,stroke:#333,stroke-width:2px;
-    classDef logic fill:#e1f5fe,stroke:#0277bd,stroke-width:2px;
+    classDef logic fill:#fffde7,stroke:#f9a825,stroke-width:2px;
     classDef comp fill:#fff3e0,stroke:#ef6c00,stroke-width:2px;
     classDef design fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px;
     classDef infra fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+    classDef twitter fill:#e1f5fe,stroke:#0277bd,stroke-width:2px;
     classDef finish fill:#333,stroke:#333,stroke-width:2px,color:#fff;
 
     %% --- Phase 1: スタート地点 ---
     subgraph Phase1 ["Phase 1: Foundation"]
         direction TB
-        P1_Init["1. Init & Clean<br>npm create / git init<br>⏱️ 1h"]:::base
-        P1_Layout["2. Layouts & Dirs<br>BaseLayout / Folder Struct<br>⏱️ 2h"]:::base
-        P1_Schema["3. Schema Def<br>Logs = Daily Note format<br>⏱️ 2h"]:::base
+        P1_Init["✅ 1. Init & Clean<br>npm create / git init<br>⏱️ 1h"]:::base
+        P1_Layout["✅ 2. Layouts & Dirs<br>BaseLayout / Folder Struct<br>⏱️ 2h"]:::base
+        P1_Schema["✅ 3. Schema Def<br>config / Article Format<br>⏱️ 2h"]:::base
+        P1_ListPages["✅ 4. List Pages<br>articles, scraps<br>⏱️ 2h"]:::base
         
-        P1_Init --> P1_Layout --> P1_Schema
+        P1_Init --> P1_Layout --> P1_Schema --> P1_ListPages
     end
 
     %% --- 並行開発パート ---
@@ -94,20 +96,18 @@ graph TD
     subgraph TrackLogic ["Track A: Logic Dev"]
         direction TB
         P2_Wiki["🔗 Wiki Logic<br>(remark-wiki-link)<br>⏱️ 3h"]:::logic
-        P2_Memos["📝 Memos Parser<br>Parse list items w/ time<br>⏱️ 3h"]:::logic
         P2_Status["🏷️ Status Logic<br>(Seed/Bud filtering)<br>⏱️ 2h"]:::logic
         
-        P2_Wiki --> P2_Memos --> P2_Status
+        P2_Wiki --> P2_Status
     end
 
     %% Track B: コンポーネント開発 (Updated for Heatmap)
     subgraph TrackComp ["Track B: Component Dev"]
         direction TB
         P3_MDX["🛠️ MDX Setup<br>Integration check<br>⏱️ 3h"]:::comp
-        P3_Heatmap["📅 Heatmap UI<br>Calendar contribution view<br>⏱️ 3h"]:::comp
         P3_Diff["💻 GitHub Components<br>Diff / Repo Card<br>⏱️ 3h"]:::comp
         
-        P3_MDX --> P3_Heatmap --> P3_Diff
+        P3_MDX --> P3_Diff
     end
 
     %% Track C: インフラ構築
@@ -119,24 +119,36 @@ graph TD
         P4_Apache --> P4_CI
     end
 
-    %% --- Phase 5: 合流と仕上げ ---
-    subgraph Phase5 ["Phase 5: Design & Polish"]
+    %% Track D: SNSモード開発
+    subgraph TrackTwitter ["Track D: SNS Mode"]
         direction TB
-        P5_Design["🎨 The Swamp<br>Base CSS / Mobile / OGP<br>⏱️ 10h 〜 ∞"]:::design
+        P5_Memos["📝 Memos Parser<br>Parse list items<br>⏱️ 3h"]:::twitter
+        P5_Tweets["✅ Tweets Page<br>Timeline view<br>⏱️ 3h"]:::twitter
+
+        P5_Memos --> P5_Tweets
+    end
+
+    %% --- Phase 6: 合流と仕上げ ---
+    subgraph Phase6 ["Phase 6: Design & Polish"]
+        direction TB
+        P6_Design["🎨 The Swamp<br>Base CSS / Mobile / OGP<br>⏱️ 10h 〜 ∞"]:::design
     end
 
     Goal(🏁 Release v1.0):::finish
 
     %% 依存関係
-    P1_Schema --> P2_Wiki
-    P1_Schema --> P3_MDX
-    P1_Schema --> P4_Apache
+    P1_ListPages --> P2_Wiki
+    P1_ListPages --> P3_MDX
+    P1_ListPages --> P4_Apache
+    P1_Schema --> P5_Memos
 
     %% 合流
-    P2_Status --> P5_Design
-    P3_Diff --> P5_Design
+    P2_Status --> P6_Design
+    P3_Diff --> P6_Design
+    P5_Tweets --> P6_Design
     
     %% リリース条件
     P4_CI --> Goal
-    P5_Design --> Goal
+    P6_Design --> Goal
+
 ```

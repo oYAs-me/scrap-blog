@@ -1,0 +1,33 @@
+---
+// src/pages/scraps/index.astro
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+// 1. 記事データを取得
+// 降順（新しい順）に並び替え
+const scraps = (await getCollection('scraps')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<BaseLayout title="Scraps">
+  <h1>Scraps</h1>
+  <p>成果物と技術記事のアーカイブ</p>
+
+  <ul>
+    {scraps.map((scrap) => (
+      <li>
+        <a href={`/scraps/${scrap.slug}`}>
+          {/* 記事タイトル */}
+          <strong>{scrap.data.title}</strong>
+        </a>
+        <br/>
+        
+        {/* 日付とタグの表示 */}
+        <small style="color: #666;">
+          {scrap.data.pubDate.toLocaleDateString('ja-JP')}
+        </small>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>
