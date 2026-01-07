@@ -58,7 +58,7 @@ scrap-blog/
 │   │   ├── index.astro     # トップページ (Feed + Random Notes + SNS Preview)
 │   │   ├── articles/
 │   │   │   ├── [...slug].astro # Blog個別ページ
-│   │   ｜   └── index.astro     # Blog一覧ページ
+│   │   │   └── index.astro     # Blog一覧ページ
 │   │   ├── scraps/
 │   │   │   ├── [...slug].astro # Scrapbox個別ページ
 │   │   │   └── index.astro     # Scrapbox一覧ページ
