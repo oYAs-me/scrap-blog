@@ -10,6 +10,9 @@
   },
   "dependencies": {
     "astro": "^5.16.6",
-    "marked": "^17.0.1"
+    "marked": "^17.0.1",
+    "marked-katex-extension": "^5.1.6",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0"
   }
 }
