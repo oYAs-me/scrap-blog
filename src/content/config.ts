@@ -43,8 +43,8 @@ const scrapsCollection = defineCollection({
 const tweetsCollection = defineCollection({
   type: 'content',
   schema: z.object({
-    // タイトル不要、日付がID代わり
-    pubDate: z.date(),
+    pubDate: z.date().optional(),
+    tags: z.array(z.string()).optional(),
   }),
 });
 

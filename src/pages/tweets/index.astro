@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getAllTweets } from '../../utils/tweetsParser';
+import { marked } from 'marked'; // MarkdownをHTMLに変換するため
+
+// パーサーを実行して全メモを取得
+const tweets = await getAllTweets();
+---
+
+<BaseLayout pageTitle="Timeline">
+  <div class="timeline-container">
+    <div class="timeline">
+      {tweets.map((tweet) => (
+        <div class="tweet-card">
+          <div class="tweet-meta">
+            <time datetime={tweet.date.toISOString()}>
+              {tweet.date.toLocaleDateString('ja-JP')} 
+              <span class="tweet-time">{tweet.date.toLocaleTimeString('ja-JP', {hour: '2-digit', minute:'2-digit'})}</span>
+            </time>
+          </div>
+          
+          <div class="tweet-content" set:html={marked.parse(tweet.content)} />
+          
+          {/* <div class="tweet-source">
+            <small>Source: {tweet.originalFile}</small>
+          </div> */}
+        </div>
+      ))}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .timeline {
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .tweet-card {
+    border: 1px solid #ddd;
+    padding: 1rem;
+    border-radius: 8px;
+    background: #fff;
+  }
+  .tweet-meta {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+  .tweet-time {
+    font-weight: bold;
+    color: #333;
+  }
+  /* Markdownのpタグの余白を消す調整 */
+  .tweet-content :global(p) {
+    margin: 0;
+  }
+</style>
