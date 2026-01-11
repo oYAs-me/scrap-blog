@@ -56,9 +56,22 @@ export async function getAllTweets(): Promise<TweetItem[]> {
     // ツイートをリストに追加する関数（共通化）
     // 本文が空文字(空白のみ含む)の場合は追加しない
     const pushCurrentTweet = async () => {
+// コンテンツが存在する場合のみ処理
       if (currentTweet && currentTweet.content && currentTweet.content.trim().length > 0) {
-        const vfile = await processor.process(currentTweet.content); // Markdown -> HTML変換
-        currentTweet.htmlContent = vfile.toString();
+        try {
+          // 変換処理を実行
+          const vfile = await processor.process(currentTweet.content);
+          currentTweet.htmlContent = vfile.toString();
+        } catch (error) {
+          // エラーハンドリング
+          console.error(`[TweetsParser] Failed to process markdown in ${currentTweet.originalFile}:`, error);
+          
+          // Fallback: 変換に失敗した場合は、とりあえず元のMarkdownテキストをそのまま入れる
+          // (これで画面に何も出なくなる事態は防げます)
+          currentTweet.htmlContent = `<p style="color:red; font-size:0.8em;">Parse Error</p>${currentTweet.content}`;
+        }
+
+        // 必須プロパティが揃っているか確認してPush
         if (currentTweet.id && currentTweet.date && currentTweet.originalFile) {
            allTweets.push(currentTweet as TweetItem);
         }
@@ -93,6 +106,7 @@ export async function getAllTweets(): Promise<TweetItem[]> {
         currentTweet = {
           id: `${file.slug}-${index}`,
           content: content,
+          htmlContent: '', // 後で上書きする
           date: tweetDate,
           originalFile: file.slug,
         };
