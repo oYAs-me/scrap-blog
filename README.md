@@ -65,6 +65,9 @@ scrap-blog/
 │   │   ├── tweets/
 │   │   │   └── index.astro     # SNSモードタイムラインページ
 │   │   └── rss.xml.js       # RSSフィード生成
+│   ├── utils/              # ユーティリティ関数
+│   │   ├── wikiLinks.ts    # Wikiリンクパーサー
+│   │   └── tweetsParser.ts # ツイートパーサー
 │   └── styles/
 │       └── global.css      # 全体スタイル (CSS Variables活用)
 ├── astro.config.mjs        # Astro設定 (remark-wiki-link等のプラグイン設定)
