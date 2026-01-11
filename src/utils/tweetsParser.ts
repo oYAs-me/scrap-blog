@@ -26,7 +26,7 @@ const processor = unified()
 // Tweet取得の正規表現: "- HH:MM 本文" または "- 本文" にmatch
 // Group 1: チェックボックス ("[ ]" or "[x]") ※optional
 // Group 2: 時刻 (HH:MM or HH:MM:SS) ※optional
-// Group 3: 本文 ※optional
+// Group 3: ツイートの本文（実際の内容部分）※optional
 const tweetRegex = /^- (?:(\[[ xX]?\]) )?(?:(\d{1,2}:\d{2}(?::\d{2})?) ?)?(.*)$/;
 
 export async function getAllTweets(): Promise<TweetItem[]> {
