@@ -56,7 +56,7 @@ export async function getAllTweets(): Promise<TweetItem[]> {
     // ツイートをリストに追加する関数（共通化）
     // 本文が空文字(空白のみ含む)の場合は追加しない
     const pushCurrentTweet = async () => {
-// コンテンツが存在する場合のみ処理
+      // コンテンツが存在する場合のみ処理
       if (currentTweet && currentTweet.content && currentTweet.content.trim().length > 0) {
         try {
           // 変換処理を実行
