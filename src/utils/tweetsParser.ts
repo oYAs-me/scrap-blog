@@ -1,13 +1,33 @@
 import { getCollection } from 'astro:content';
-// import type { CollectionEntry } from 'astro:content';
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
+import remarkMath from 'remark-math';
+import remarkRehype from 'remark-rehype';
+import rehypeKatex from 'rehype-katex';
+import rehypeStringify from 'rehype-stringify';
 
 // 1つのツイート(Tweet)を表す型定義
 export type TweetItem = {
   id: string;        // ファイル名 + 行番号などで一意にする
   content: string;   // 本文 (Markdown形式)
+  htmlContent: string;  // 変換済みのHTML
   date: Date;        // 日付 + 時間
   originalFile: string; // 元ファイル名
 };
+
+// Markdownプロセッサーの定義
+const processor = unified()
+  .use(remarkParse)
+  .use(remarkMath)
+  .use(remarkRehype)
+  .use(rehypeKatex)
+  .use(rehypeStringify);
+
+// Tweet取得の正規表現: "- HH:MM 本文" または "- 本文" にmatch
+// Group 1: チェックボックス ("[ ]" or "[x]") ※optional
+// Group 2: 時刻 (HH:MM or HH:MM:SS) ※optional
+// Group 3: 本文 ※optional
+const tweetRegex = /^- (?:(\[[ xX]?\]) )?(?:(\d{1,2}:\d{2}(?::\d{2})?) ?)?(.*)$/;
 
 export async function getAllTweets(): Promise<TweetItem[]> {
   const allTweetsFiles = await getCollection('tweets');
@@ -15,7 +35,6 @@ export async function getAllTweets(): Promise<TweetItem[]> {
 
   for (const file of allTweetsFiles) {
     // ファイル名から日付オブジェクトを作成 (例: 2026-01-08.md -> Date)
-    // ※ファイル名が日付形式でない場合は作成日などを使うフォールバックが必要
     const fileDateStr = file.slug.split('/').pop()?.replace('.md', '').replace('test-', '') || '';
     const fileBaseDate = new Date(fileDateStr);
 
@@ -36,9 +55,10 @@ export async function getAllTweets(): Promise<TweetItem[]> {
 
     // ツイートをリストに追加する関数（共通化）
     // 本文が空文字(空白のみ含む)の場合は追加しない
-    const pushCurrentTweet = () => {
+    const pushCurrentTweet = async () => {
       if (currentTweet && currentTweet.content && currentTweet.content.trim().length > 0) {
-        // 型ガードを通しているのでキャスト等は不要だが、Partialなので一応チェック
+        const vfile = await processor.process(currentTweet.content); // Markdown -> HTML変換
+        currentTweet.htmlContent = vfile.toString();
         if (currentTweet.id && currentTweet.date && currentTweet.originalFile) {
            allTweets.push(currentTweet as TweetItem);
         }
@@ -46,41 +66,30 @@ export async function getAllTweets(): Promise<TweetItem[]> {
       currentTweet = null;
     };
 
-    // Tweet取得の正規表現: "- HH:MM 本文" または "- 本文" にmatch
-    // Group 1: チェックボックス ("[ ]" or "[x]") ※optional
-    // Group 2: 時刻 (HH:MM or HH:MM:SS) ※optional
-    // Group 3: 本文 ※optional
-    const tweetRegex = /^- (?:(\[[ xX]?\]) )?(?:(\d{1,2}:\d{2}(?::\d{2})?) ?)?(.*)$/;
-
     // 各行を解析してツイートを抽出
-    lines.forEach((line, index) => {
+    for (const [index, line] of lines.entries()) {
       const match = line.match(tweetRegex);
+      
       if (match) {
-        // 既にcurrentTweetがある場合は、それをリストに追加
-        pushCurrentTweet();
+        await pushCurrentTweet(); // 前のツイートを保存
 
-        // 新しいツイートの開始
-        const checkbox = match[1]; // "[ ]" や "[x]"、なければ undefined
-        const timeStr = match[2];  // "10:00"、"14:30:15"、なければ undefined
-        let content = match[3] || '';    // 本文
+        const checkbox = match[1];
+        const timeStr = match[2];
+        let content = match[3] || '';
 
-        // チェックボックスがある場合は本文の先頭に戻す
         if (checkbox) {
+          // チェックボックスがある場合、Markdownのリスト形式を維持して本文に戻す
           content = `- ${checkbox} ${content}`;
         }
 
-        // 日付と時間を結合してDateオブジェクトを作る
         const tweetDate = new Date(fileBaseDate);
         if (timeStr) {
           const timeLst = timeStr.split(':').map(Number);
-          tweetDate.setHours(timeLst[0], timeLst[1]);
+          tweetDate.setHours(timeLst[0], timeLst[1], timeLst[2] || 0);
         } else {
-            // 時間がない場合はファイルの代表時刻(00:00)に設定
-            // 前の行の時間などを引き継ぐロジックを入れても良い
-            tweetDate.setHours(0, 0); 
+            tweetDate.setHours(0, 0, 0); 
         }
 
-        // currentTweetを整理
         currentTweet = {
           id: `${file.slug}-${index}`,
           content: content,
@@ -88,14 +97,12 @@ export async function getAllTweets(): Promise<TweetItem[]> {
           originalFile: file.slug,
         };
       } else {
-        // ツイート行でない場合、currentTweetがあれば本文を追加
         if (currentTweet) {
           currentTweet.content += `\n${line}`;
         }
       }
-    });
-    // 最後のツイートをリストに追加
-    pushCurrentTweet();
+    }
+    await pushCurrentTweet(); // 末尾処理
   }
 
   // 新しい順（降順）にソート
