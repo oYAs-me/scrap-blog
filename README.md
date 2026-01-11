@@ -34,7 +34,7 @@ A personal scrapbox-like log or blog and digital garden built with Astro. / Astr
 - **特徴:**
   - タイトル不要（日付がID）。
   - 時系列（降順）のタイムライン表示。
-  - Obsidian-Memos likeな表示や管理
+  - Tweets Parserによる表示や管理
 
 ## ディレクトリ構成案
 
@@ -86,82 +86,82 @@ graph TD
     classDef design fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px;
     classDef infra fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
     classDef twitter fill:#e1f5fe,stroke:#0277bd,stroke-width:2px;
+    classDef quality fill:#ffebee,stroke:#c62828,stroke-width:2px;
     classDef finish fill:#333,stroke:#333,stroke-width:2px,color:#fff;
+    classDef sprint fill:#e0f7fa,stroke:#006064,stroke-width:2px;
 
-    %% --- Phase 1: スタート地点 ---
-    subgraph Phase1 ["Phase 1: Foundation"]
-        direction TB
-        P1_Init["✅ 1. Init & Clean<br>npm create / git init<br>⏱️ 1h"]:::base
-        P1_Layout["✅ 2. Layouts & Dirs<br>BaseLayout / Folder Struct<br>⏱️ 2h"]:::base
-        P1_Schema["✅ 3. Schema Def<br>config / Article Format<br>⏱️ 2h"]:::base
-        P1_ListPages["✅ 4. List Pages<br>articles, scraps<br>⏱️ 2h"]:::base
-        
+    %% --- Phase 1: 基礎構築 (完了) ---
+    subgraph P1 ["Phase 1: Foundation (Completed)"]
+        P1_Init["✅ 1. Init & Clean"]:::base
+        P1_Layout["✅ 2. Layouts & Dirs"]:::base
+        P1_Schema["✅ 3. Schema Def"]:::base
+        P1_ListPages["✅ 4. List Pages"]:::base
         P1_Init --> P1_Layout --> P1_Schema --> P1_ListPages
     end
-
-    %% --- 並行開発パート ---
     
-    %% Track A: ロジック開発 (Updated for Memos)
-    subgraph TrackLogic ["Track A: Logic Dev"]
+    %% --- Phase 2: SNSモード (完了) ---
+    subgraph P2 ["Phase 2: SNS Mode (Completed)"]
+        P2_TweetsParser["✅ 📝 Tweets Parser"]:::twitter
+        P2_Timeline["✅ 🐦 Timeline Page"]:::twitter
+    end
+    
+    P1_ListPages --> P2
+
+    %% --- Phase 3: 開発環境と基盤設計 ---
+    subgraph P3 [Phase 3: Scaffolding & Base Design]
+        direction LR
+        P3_Test["🧪 Testing Setup<br>Vitestを導入し、単体テストの実行環境を構築"]:::quality
+        P3_CI["🤖 Initial CI Setup<br>Git Pushをトリガーに、ビルドとテストを自動実行"]:::infra
+        P3_Design["🎨 Design System<br>サイト全体の色、フォント、スペーシング等を定義"]:::design
+    end
+    
+    P2 --> P3
+
+    %% --- Phase 4: イテレーション開発 (機能の実装と統合) ---
+    subgraph P4 [Phase 4: Iterative Development]
         direction TB
-        P2_Wiki["🔗 Wiki Logic<br>(remark-wiki-link)<br>⏱️ 3h"]:::logic
-        P2_Status["🏷️ Status Logic<br>(Seed/Bud filtering)<br>⏱️ 2h"]:::logic
         
-        P2_Wiki --> P2_Status
-    end
+        subgraph I1 [Iteration 1: Core Linking]
+            I1_Wiki["🔗 Wiki Link Logic<br>[[リンク]]記法を解釈し、内部リンクに変換"]:::logic
+            I1_Backlinks["↩️ Backlinks Logic<br>各ページへの被リンクを検出し、表示用データを生成"]:::logic
+        end
 
-    %% Track B: コンポーネント開発 (Updated for Heatmap)
-    subgraph TrackComp ["Track B: Component Dev"]
-        direction TB
-        P3_MDX["🛠️ MDX Setup<br>Integration check<br>⏱️ 3h"]:::comp
-        P3_Diff["💻 GitHub Components<br>Diff / Repo Card<br>⏱️ 3h"]:::comp
+        I1_Int("🔄 Integration 1"):::sprint
+
+        subgraph I2 [Iteration 2: Content Features]
+            I2_Status["🏷️ Status Logic<br>記事のステータス(Seed/Bud)に基づきフィルタリング"]:::logic
+            I2_MDX["🛠️ MDX & Components<br>MDXを導入し、Markdown内でコンポーネントを利用"]:::comp
+        end
         
-        P3_MDX --> P3_Diff
-    end
-
-    %% Track C: SNSモード開発
-    subgraph TrackTwitter ["Track C: SNS Mode"]
-        direction TB
-        P4_Memos["📝 Memos Parser<br>Parse list items<br>⏱️ 3h"]:::twitter
-        P4_Tweets["✅ Tweets Page<br>Timeline view<br>⏱️ 3h"]:::twitter
-
-        P4_Memos --> P4_Tweets
-    end
-
-    %% Track D: インフラ構築
-    subgraph TrackInfra ["Track D: Infra Ops"]
-        direction TB
-        P5_Apache["⚙️ Apache Config<br>(Vhost setup)<br>⏱️ 1h"]:::infra
-        P5_CI["🤖 GitHub Actions<br>(Build & Deploy)<br>⏱️ 3h"]:::infra
+        I2_Int("🔄 Integration 2"):::sprint
         
-        P5_Apache --> P5_CI
+        I1 --> I1_Int --> I2 --> I2_Int
     end
+    
+    P3 --> I1
 
-    %% すべてのTrackをmerge
-    Merge["🔀 Merge Tracks<br>!MERGE!<br>⏱️ ??h"]:::base
-
-    P2_Status --> Merge
-    P3_Diff --> Merge
-    P4_Tweets --> Merge
-
-    %% --- Phase 6: 合流と仕上げ ---
-    subgraph Phase6 ["Phase 6: Design & Polish"]
-        direction TB
-        P6_Design["🎨 The Swamp<br>Base CSS / Mobile / OGP<br>⏱️ 10h 〜 ∞"]:::design
+    %% --- Phase 5: 仕上げと最適化 ---
+    subgraph P5 [Phase 5: Polish & Optimization]
+        P5_Responsive["📱 Responsive Design<br>スマートフォンやタブレット表示に最適化"]:::design
+        P5_OGP["🖼️ OGP Image Gen<br>SNS共有時のプレビュー画像をリッチに生成"]:::design
+        P5_Access["♿ Accessibility<br>スクリーンリーダー対応などアクセシビリティを向上"]:::design
+        P5_SEO["📈 SEO & RSS<br>RSSやサイトマップを生成し、検索エンジン向けに最適化"]:::quality
+        P5_Responsive --> P5_OGP --> P5_Access --> P5_SEO
     end
+    
+    I2_Int --> P5_Responsive
 
+    %% --- Phase 6: デプロイ準備とリリース ---
+    subgraph P6 [Phase 6: Deployment]
+        P6_Apache["⚙️ Apache Config<br>本番環境のWebサーバ(Apache)を設定"]:::infra
+        P6_CD["🚀 Deployment Pipeline (CD)<br>本番環境へのデプロイを自動化"]:::infra
+        P6_Apache --> P6_CD
+    end
+    
+    P5_SEO --> P6_Apache
+    P3_CI --> P6_CD
+    
     Goal(🏁 Release v1.0):::finish
-
-    %% 依存関係
-    P1_ListPages --> P2_Wiki
-    P1_ListPages --> P3_MDX
-    P1_Schema --> P4_Memos
-    P1_ListPages --> P5_Apache
-
-    Merge --> P6_Design
     
-    %% リリース条件
-    P5_CI --> Goal
-    P6_Design --> Goal
-
+    P6_CD --> Goal
 ```
