@@ -64,7 +64,11 @@ export async function getAllTweets(): Promise<TweetItem[]> {
           currentTweet.htmlContent = vfile.toString();
         } catch (error) {
           // エラーハンドリング
-          console.error(`[TweetsParser] Failed to process markdown in ${currentTweet.originalFile}:`, error);
+          console.error(
+            `[TweetsParser] Failed to process markdown in ${currentTweet.originalFile}. ` +
+              `Content preview: "${currentTweet.content.slice(0, 100)}"`,
+            error
+          );
           
           // Fallback: 変換に失敗した場合は、とりあえず元のMarkdownテキストをそのまま入れる
           // (これで画面に何も出なくなる事態は防げます)
