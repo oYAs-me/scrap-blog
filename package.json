@@ -6,11 +6,17 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "test": "vitest",
+    "test:run": "vitest run",
     "astro": "astro"
   },
   "dependencies": {
     "astro": "^5.16.6",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0"
+  },
+  "devDependencies": {
+    "happy-dom": "^20.1.0",
+    "vitest": "^4.0.16"
   }
 }
