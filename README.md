@@ -7,7 +7,7 @@ A personal scrapbox-like log or blog and digital garden built with Astro. / Astr
 ## 🛠 Tech Stack
 
 - **Framework:** [Astro](https://astro.build)
-- **Deployment:** Linux / Apache via GitHub Actions
+- **Deployment:** Linux / Nginx via GitHub Actions
 - **Concept:** Digital Garden (Seed -> Bud -> Evergreen) ?
 
 ## 機能
@@ -110,7 +110,7 @@ graph TD
     %% --- Phase 3: 開発環境と基盤設計 ---
     subgraph P3 [Phase 3: Scaffolding & Base Design]
         direction LR
-        P3_Test["🧪 Testing Setup<br>Vitestを導入し、単体テストの実行環境を構築"]:::quality
+        P3_Test["✅ Testing Setup<br>Vitestによるテスト環境を構築済み"]:::quality
         P3_CI["🤖 Initial CI Setup<br>Git Pushをトリガーに、ビルドとテストを自動実行"]:::infra
         P3_Design["🎨 Design System<br>サイト全体の色、フォント、スペーシング等を定義"]:::design
     end
@@ -153,12 +153,12 @@ graph TD
 
     %% --- Phase 6: デプロイ準備とリリース ---
     subgraph P6 [Phase 6: Deployment]
-        P6_Apache["⚙️ Apache Config<br>本番環境のWebサーバ(Apache)を設定"]:::infra
+        P6_Nginx["⚙️ Nginx Config<br>本番環境のWebサーバ(Nginx)を設定"]:::infra
         P6_CD["🚀 Deployment Pipeline (CD)<br>本番環境へのデプロイを自動化"]:::infra
-        P6_Apache --> P6_CD
+        P6_Nginx --> P6_CD
     end
     
-    P5_SEO --> P6_Apache
+    P5_SEO --> P6_Nginx
     P3_CI --> P6_CD
     
     Goal(🏁 Release v1.0):::finish
