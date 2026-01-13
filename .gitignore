@@ -37,3 +37,7 @@ pnpm-debug.log*
 # exceptions(readme and test files)
 !README*.md
 !test-*.md
+
+# temporary files
+.tmp*/
+.temp*/
