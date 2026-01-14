@@ -12,10 +12,12 @@ const tweets = await getAllTweets();
       {tweets.map((tweet) => (
         <div class="tweet-card">
           <div class="tweet-meta">
-            <time datetime={tweet.date.toISOString()}>
-              {tweet.date.toLocaleDateString('ja-JP')} 
-              <span class="tweet-time">{tweet.date.toLocaleTimeString('ja-JP', {hour: '2-digit', minute:'2-digit'})}</span>
-            </time>
+            <a href={`/tweets/${tweet.slug}`} class="tweet-link">
+              <time datetime={tweet.date.toISOString()}>
+                {tweet.date.toLocaleDateString('ja-JP')} 
+                <span class="tweet-time">{tweet.date.toLocaleTimeString('ja-JP', {hour: '2-digit', minute:'2-digit'})}</span>
+              </time>
+            </a>
           </div>
           
           <div class="tweet-content" set:html={tweet.htmlContent} />

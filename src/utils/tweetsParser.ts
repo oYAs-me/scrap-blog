@@ -9,6 +9,7 @@ import rehypeStringify from 'rehype-stringify';
 // 1つのツイート(Tweet)を表す型定義
 export type TweetItem = {
   id: string;        // ファイル名 + 行番号などで一意にする
+  slug: string;      // 個別URL用 (idと同じ)
   content: string;   // 本文 (Markdown形式)
   htmlContent: string;  // 変換済みのHTML
   date: Date;        // 日付 + 時間
@@ -107,8 +108,11 @@ export async function getAllTweets(): Promise<TweetItem[]> {
             tweetDate.setHours(0, 0, 0); 
         }
 
+        const tweetId = `${file.slug}-${index}`;
+
         currentTweet = {
-          id: `${file.slug}-${index}`,
+          id: tweetId,
+          slug: tweetId,
           content: content,
           htmlContent: '', // 後で上書きする
           date: tweetDate,
