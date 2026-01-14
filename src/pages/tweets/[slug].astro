@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getAllTweets } from '../../utils/tweetsParser';
+import type { TweetItem } from '../../utils/tweetsParser';
+
+export async function getStaticPaths() {
+  const tweets = await getAllTweets();
+  return tweets.map((tweet) => ({
+    params: { slug: tweet.slug },
+    props: { tweet },
+  }));
+}
+
+interface Props {
+  tweet: TweetItem;
+}
+
+const { tweet } = Astro.props;
+const pageTitle = `Tweet at ${tweet.date.toLocaleString('ja-JP')}`;
+---
+
+<BaseLayout pageTitle={pageTitle}>
+  <article class="tweet-detail">
+    <header class="tweet-header">
+      <time datetime={tweet.date.toISOString()}>
+        {tweet.date.toLocaleDateString('ja-JP')} 
+        {tweet.date.toLocaleTimeString('ja-JP', {hour: '2-digit', minute:'2-digit', second: '2-digit'})}
+      </time>
+    </header>
+    
+    <div class="tweet-content" set:html={tweet.htmlContent} />
+    
+    <footer class="tweet-footer">
+      <a href="/tweets">← Back to Timeline</a>
+      <hr />
+      <p class="source-info">Source: <code>{tweet.originalFile}</code> (ID: {tweet.id})</p>
+    </footer>
+  </article>
+</BaseLayout>
+
+<style>
+  .tweet-detail {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .tweet-header {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 0.5rem;
+  }
+  .tweet-content {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+  .tweet-footer {
+    margin-top: 2rem;
+    font-size: 0.9rem;
+  }
+  .tweet-footer a {
+    display: inline-block;
+    margin-bottom: 1rem;
+    color: #0066cc;
+    text-decoration: none;
+  }
+  .tweet-footer a:hover {
+    text-decoration: underline;
+  }
+  .source-info {
+    color: #999;
+    font-size: 0.8rem;
+  }
+  /* KaTeX / Math support styling */
+  .tweet-content :global(.katex-display) {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+</style>
