@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
-    "happy-dom": "^17.1.0",
+    "happy-dom": "^20.1.0",
     "typescript": "^5.7.3",
     "vitest": "^3.0.1"
   }
