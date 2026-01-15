@@ -1,5 +1,6 @@
 ---
 // ここはサーバーサイドJS (Frontmatter)
+import '../styles/global.css';
 const { pageTitle } = Astro.props;
 ---
 
@@ -9,26 +10,36 @@ const { pageTitle } = Astro.props;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous" />
     <title>{pageTitle} | scrap.yhop.net</title>
   </head>
   <body>
-    <header>
-      <nav>
-        <a href="/">Home</a> | 
-        <a href="/articles">Articles</a> |
-        <a href="/scraps">Scraps</a> | 
-        <a href="/tweets">Tweets</a>
-      </nav>
-      <h1>{pageTitle}</h1>
-    </header>
-    
-    <main>
-      <slot />
-    </main>
+    <div class="container">
+      <header>
+        <nav>
+          <a href="/">Home</a>
+          <a href="/articles">Articles</a>
+          <a href="/scraps">Scraps</a>
+          <a href="/tweets">Tweets</a>
+        </nav>
+        <h1>{pageTitle}</h1>
+      </header>
+      
+      <main>
+        <slot />
+      </main>
 
-    <footer>
-      <p>2026 yhop.net</p>
-    </footer>
+      <footer>
+        <p>2026 yhop.net</p>
+        <div class="footer-links">
+          <a href="https://github.com/oYAs-me" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://x.com/oYAs_me" target="_blank" rel="noopener noreferrer">X</a>
+          <a href="https://note.com/qk01yasu" target="_blank" rel="noopener noreferrer">note</a>
+        </div>
+      </footer>
+    </div>
   </body>
 </html>
