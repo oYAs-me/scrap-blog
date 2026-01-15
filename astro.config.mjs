@@ -11,6 +11,7 @@ export default defineConfig({
     remarkPlugins: [
       remarkMath,
       [wikiLinkPlugin, { 
+        /** @param {string} permalink */
         hrefTemplate: (permalink) => `/scraps/${permalink}`,
         aliasDivider: '|'
       }],
