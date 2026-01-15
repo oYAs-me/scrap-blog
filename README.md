@@ -112,7 +112,7 @@ graph TD
         direction LR
         P3_Test["✅ Testing Setup<br>Vitestによるテスト環境を構築済み"]:::quality
         P3_CI["✅ Initial CI Setup<br>Git Pushをトリガーに、ビルドとテストを自動実行"]:::infra
-        P3_Design["🎨 Design System<br>サイト全体の色、フォント、スペーシング等を定義"]:::design
+        P3_Design["✅ Design System<br>サイト全体の色、フォント、スペーシング等を定義"]:::design
     end
     
     P2 --> P3
