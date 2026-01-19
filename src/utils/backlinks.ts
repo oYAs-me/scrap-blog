@@ -37,7 +37,7 @@ export async function getAllBacklinks(): Promise<BacklinkMap> {
     const posts = await getCollection(collectionName as 'articles' | 'scraps');
     
     for (const post of posts) {
-      await processPost(post.body, collectionName, post.slug, post.data.title || post.slug, backlinkMap);
+      processPost(post.body, collectionName, post.slug, post.data.title || post.slug, backlinkMap);
     }
   }
 
@@ -45,7 +45,7 @@ export async function getAllBacklinks(): Promise<BacklinkMap> {
   const tweets = await getAllTweets();
   for (const tweet of tweets) {
     // ツイートのSlugは既に "yyyy-mm-dd-hh-mm-seq" 形式になっており、プレフィックスはない
-    await processPost(tweet.content, 'tweets', tweet.slug, tweet.title, backlinkMap);
+    processPost(tweet.content, 'tweets', tweet.slug, tweet.title, backlinkMap);
   }
 
   // Cache the result before returning
@@ -53,7 +53,7 @@ export async function getAllBacklinks(): Promise<BacklinkMap> {
   return backlinkMap;
 }
 
-async function processPost(
+function processPost(
   markdownBody: string,
   collection: string,
   slug: string,
