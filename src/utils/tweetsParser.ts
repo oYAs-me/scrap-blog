@@ -148,5 +148,11 @@ export async function getAllTweets(): Promise<TweetItem[]> {
   }
 
   // 新しい順（降順）にソート
-  return allTweets.sort((a, b) => b.slug.localeCompare(a.slug)); // IDベースでソート
+  // NOTE: slug は generateTweetId() で `YYYYMMDD-HHmm[-枝番]` 形式で生成されるため、
+  // 文字列ソートしても日付の降順と一致する。念のため slug が同一の場合は date も比較する。
+  return allTweets.sort((a, b) => {
+    const slugCompare = b.slug.localeCompare(a.slug); // IDベースでソート
+    if (slugCompare !== 0) return slugCompare;
+    return b.date.getTime() - a.date.getTime();
+  });
 }
