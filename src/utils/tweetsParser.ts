@@ -78,7 +78,11 @@ export async function getAllTweets(): Promise<TweetItem[]> {
           currentTweet.htmlContent = vfile.toString();
 
         } catch (error) {
-          // ... (エラーハンドリング)
+          console.error('[TweetsParser] Failed to parse tweet content.', {
+            fileSlug: file.slug,
+            contentPreview: currentTweet.content.slice(0, 100),
+            error,
+          });
           currentTweet.htmlContent = `<p style="color:red; font-size:0.8em;">Parse Error</p>${currentTweet.content}`;
         }
 
@@ -101,7 +105,7 @@ export async function getAllTweets(): Promise<TweetItem[]> {
         }
 
         // 必須プロパティが揃っているか確認してPush
-        if (currentTweet.id && currentTweet.date && currentTweet.originalFile) {
+        if (currentTweet.id && currentTweet.date && currentTweet.originalFile && currentTweet.title) {
            allTweets.push(currentTweet as TweetItem);
         }
       }
@@ -148,5 +152,11 @@ export async function getAllTweets(): Promise<TweetItem[]> {
   }
 
   // 新しい順（降順）にソート
-  return allTweets.sort((a, b) => b.slug.localeCompare(a.slug)); // IDベースでソート
+  // NOTE: slug は generateTweetId() で `YYYYMMDD-HHmm[-枝番]` 形式で生成されるため、
+  // 文字列ソートしても日付の降順と一致する。念のため slug が同一の場合は date も比較する。
+  return allTweets.sort((a, b) => {
+    const slugCompare = b.slug.localeCompare(a.slug); // IDベースでソート
+    if (slugCompare !== 0) return slugCompare;
+    return b.date.getTime() - a.date.getTime();
+  });
 }

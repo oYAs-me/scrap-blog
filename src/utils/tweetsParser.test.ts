@@ -126,7 +126,7 @@ describe('getAllTweets', () => {
     const tweets = await getAllTweets();
     expect(tweets).toHaveLength(2);
     
-    // 降順ソートなので Second (sequence 02) が先、First (sequence 01) が後
+    // 降順ソートなので Second (sequence 2, suffix -1) が先、First (sequence 1, no suffix) が後
     const t1 = tweets[1]; // First (Older in file)
     const t2 = tweets[0]; // Second (Newer in file, has suffix)
 
