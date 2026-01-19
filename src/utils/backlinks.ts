@@ -24,7 +24,7 @@ export function clearBacklinksCache(): void {
  */
 export async function getAllBacklinks(): Promise<BacklinkMap> {
   // Return cached result if available
-  if (cachedBacklinks) {
+  if (cachedBacklinks !== null) {
     return cachedBacklinks;
   }
   
