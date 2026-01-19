@@ -42,18 +42,20 @@ A personal scrapbox-like log or blog and digital garden built with Astro. / Astr
 scrap-blog/
 ├── public/                 # 静的ファイル (favicon, robots.txt)
 ├── src/
+│   ├── consts.ts         # 定数定義
+│   ├── types.ts          # 型などの定義
 │   ├── components/         # UI部品
-│   │   ├── GitHubDiff.astro    # コード差分表示用コンポーネント
-│   │   ├── Timeline.astro      # SNS風フィード表示
-│   │   └── WikiLink.astro      # 内部リンク処理
+│   │   ├── Backlinks.astro     # バックリンク表示コンポーネント
+│   │   ├── GitHubDiff.astro    # コード差分表示用コンポーネント (予定)
+│   │   ├── Timeline.astro      # SNS風フィード表示 (予定)
 │   ├── content/            # 記事データ (Markdown/MDX)
-│   │   ├── config.ts       # スキーマ定義 (ここでLogs/Notes/Projectsを定義)
+│   │   ├── config.ts       # スキーマ定義 (Articles/Scraps/Tweets)
 │   │   ├── articles/       # Blogモード用
 │   │   ├── scraps/         # Scrapboxモード用
 │   │   └── tweets/         # SNSモード用 (ファイル名は日付: 2026-01-05.md)
 │   ├── layouts/            # ページレイアウト
 │   │   ├── BaseLayout.astro
-│   │   └── NoteLayout.astro
+│   │   └── NoteLayout.astro (予定)
 │   ├── pages/              # ルーティング
 │   │   ├── index.astro     # トップページ (Feed + Random Notes + SNS Preview)
 │   │   ├── articles/
@@ -63,13 +65,17 @@ scrap-blog/
 │   │   │   ├── [...slug].astro # Scrapbox個別ページ
 │   │   │   └── index.astro     # Scrapbox一覧ページ
 │   │   ├── tweets/
+│   │   │   ├── [slug].astro    # SNS個別ページ (仮想)
 │   │   │   └── index.astro     # SNSモードタイムラインページ
-│   │   └── rss.xml.js       # RSSフィード生成
-│   ├── utils/              # ユーティリティ関数
-│   │   ├── wikiLinks.ts    # Wikiリンクパーサー
-│   │   └── tweetsParser.ts # ツイートパーサー
-│   └── styles/
-│       └── global.css      # 全体スタイル (CSS Variables活用)
+│   │   └── rss.xml.js       # RSSフィード生成 (予定)
+│   ├── styles/
+│   │   └── global.css      # 全体スタイル (CSS Variables活用)
+│   └── utils/              # ユーティリティ関数
+│        ├── backlinks.ts    # WikiLink解析・バックリンク生成
+│        ├── backlinks.test.ts
+│        ├── contentLinks.test.ts # WikiLink解析テスト
+│        ├── tweetsParser.ts # ツイートパーサー
+│        └── tweetsParser.test.ts
 ├── astro.config.mjs        # Astro設定 (remark-wiki-link等のプラグイン設定)
 ├── package.json
 └── tsconfig.json
@@ -122,8 +128,8 @@ graph TD
         direction TB
         
         subgraph I1 [Iteration 1: Core Linking]
-            I1_Wiki["🔗 Wiki Link Logic<br>[[リンク]]記法を解釈し、内部リンクに変換"]:::logic
-            I1_Backlinks["↩️ Backlinks Logic<br>各ページへの被リンクを検出し、表示用データを生成"]:::logic
+            I1_Wiki["✅ 🔗 Wiki Link Logic<br>[[リンク]]記法を解釈し、内部リンクに変換"]:::logic
+            I1_Backlinks["✅ ↩️ Backlinks Logic<br>各ページへの被リンクを検出し、表示用データを生成"]:::logic
         end
 
         I1_Int("🔄 Integration 1"):::sprint
