@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import wikiLinkPlugin from 'remark-wiki-link';
+import { wikiLinkSettings } from './src/consts.js';
 
 // https://astro.build/config
 export default defineConfig({
@@ -10,11 +11,7 @@ export default defineConfig({
   markdown: {
     remarkPlugins: [
       remarkMath,
-      [wikiLinkPlugin, { 
-        /** @param {string} permalink */
-        hrefTemplate: (permalink) => `/scraps/${permalink}`,
-        aliasDivider: '|'
-      }],
+      [wikiLinkPlugin, wikiLinkSettings],
     ],
     rehypePlugins: [rehypeKatex],
   },

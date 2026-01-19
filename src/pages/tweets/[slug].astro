@@ -1,22 +1,35 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getAllTweets } from '../../utils/tweetsParser';
-import type { TweetItem } from '../../utils/tweetsParser';
+import type { TweetItem, BacklinkEntry } from '../../types';
+import Backlinks from '../../components/Backlinks.astro';
+import { getAllBacklinks } from '../../utils/backlinks';
 
 export async function getStaticPaths() {
   const tweets = await getAllTweets();
-  return tweets.map((tweet) => ({
-    params: { slug: tweet.slug },
-    props: { tweet },
-  }));
+  const allBacklinks = await getAllBacklinks();
+
+  return tweets.map((tweet) => {
+    // tweet.slug は "yyyy-mm-dd-hh-mm-seq" 形式
+    const lookupKey = `tweets/${tweet.slug}`;
+    
+    return {
+      params: { slug: tweet.slug },
+      props: { 
+        tweet,
+        backlinks: allBacklinks[lookupKey] || []
+      },
+    };
+  });
 }
 
 interface Props {
   tweet: TweetItem;
+  backlinks: BacklinkEntry[];
 }
 
-const { tweet } = Astro.props;
-const pageTitle = `Tweet at ${tweet.date.toLocaleString('ja-JP')}`;
+const { tweet, backlinks } = Astro.props;
+const pageTitle = tweet.title;
 ---
 
 <BaseLayout pageTitle={pageTitle}>
@@ -32,9 +45,9 @@ const pageTitle = `Tweet at ${tweet.date.toLocaleString('ja-JP')}`;
     
     <footer class="tweet-footer">
       <a href="/tweets">← Back to Timeline</a>
-      <hr />
-      <p class="source-info">Source: <code>{tweet.originalFile}</code> (ID: {tweet.id})</p>
     </footer>
+
+    <Backlinks backlinks={backlinks} />
   </article>
 </BaseLayout>
 

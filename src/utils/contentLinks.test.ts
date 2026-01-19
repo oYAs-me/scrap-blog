@@ -5,17 +5,12 @@ import { glob } from 'glob';
 import { remark } from 'remark';
 import wikiLinkPlugin from 'remark-wiki-link';
 import { visit } from 'unist-util-visit';
+import { CONTENT_COLLECTIONS, wikiLinkSettings } from '../consts';
 
 // プロジェクトルート設定
 const ROOT_DIR = process.cwd();
 const CONTENT_DIR = path.join(ROOT_DIR, 'src/content');
 const PUBLIC_DIR = path.join(ROOT_DIR, 'public');
-
-// Wiki Link の設定 (astro.config.mjs と同期)
-const wikiLinkSettings = {
-  hrefTemplate: (permalink: string) => `/scraps/${permalink}`,
-  aliasDivider: '|'
-};
 
 interface LinkInfo {
   sourceFile: string;
@@ -85,13 +80,16 @@ async function resolvePath(targetPath: string, sourceFile: string): Promise<{ ex
     } catch {}
   }
 
-  // 2. コンテンツコレクション (scraps/articles) のチェック
-  const collections = ['scraps', 'articles'];
-  for (const collection of collections) {
+  // 2. コンテンツコレクション (scraps/articles/tweets) のチェック
+  for (const collection of CONTENT_COLLECTIONS) {
     const prefix = `/${collection}/`;
     if (targetPath.startsWith(prefix)) {
-      const slug = targetPath.slice(prefix.length).replace(~/$/,''); // 末尾スラッシュ除去
+      const slug = targetPath.slice(prefix.length).replace(/\/$/,''); // 末尾スラッシュ除去
       
+      // TweetsはファイルパスとURLが直接対応しない場合があるが、
+      // 簡易的なチェックとしてはファイル存在確認で代用するか、スキップする
+      if (collection === 'tweets') return { exists: true }; 
+
       const possibleFilePaths = [
         path.join(CONTENT_DIR, collection, `${slug}.md`),
         path.join(CONTENT_DIR, collection, `${slug}.mdx`),

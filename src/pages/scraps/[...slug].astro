@@ -3,21 +3,36 @@
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Backlinks from '../../components/Backlinks.astro';
+import { getAllBacklinks } from '../../utils/backlinks';
+import type { BacklinkEntry } from '../../types';
 
 // 動的ルーティングのためのパス生成
 export async function getStaticPaths() {
   // scrapsコレクションから全投稿を取得
   const scraps = await getCollection('scraps');
-  return scraps.map((scrap: Props) => ({
-    params: { slug: scrap.slug },
-    props: scrap,
-  }));
+  const allBacklinks = await getAllBacklinks();
+
+  return scraps.map((scrap: CollectionEntry<'scraps'>) => {
+    const lookupKey = `scraps/${scrap.slug}`;
+    const links = allBacklinks[lookupKey] || [];
+
+    return {
+      params: { slug: scrap.slug },
+      props: { 
+        scrap,
+        backlinks: links
+      },
+    };
+  });
 }
 
-// Propsの型定義（明示的にscrapsコレクションのエントリ型を使用）
-type Props = CollectionEntry<'scraps'>;
+interface Props {
+  scrap: CollectionEntry<'scraps'>;
+  backlinks: BacklinkEntry[];
+}
 
-const scrap = Astro.props;
+const { scrap, backlinks } = Astro.props;
 const { Content } = await scrap.render();
 ---
 
@@ -28,5 +43,6 @@ const { Content } = await scrap.render();
     <hr />
     <Content />
     
-    </div>
+    <Backlinks backlinks={backlinks} />
+  </div>
 </BaseLayout>
