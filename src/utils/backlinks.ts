@@ -8,10 +8,26 @@ import type { BacklinkMap } from '../types';
 
 const processor = remark().use(wikiLinkPlugin, wikiLinkSettings);
 
+// Module-level cache to avoid re-parsing content on every getStaticPaths call
+let cachedBacklinks: BacklinkMap | null = null;
+
+/**
+ * Clear the backlinks cache (mainly for testing purposes)
+ */
+export function clearBacklinksCache(): void {
+  cachedBacklinks = null;
+}
+
 /**
  * 全記事のバックリンク関係を構築する
+ * Results are cached at module level to improve build performance
  */
 export async function getAllBacklinks(): Promise<BacklinkMap> {
+  // Return cached result if available
+  if (cachedBacklinks !== null) {
+    return cachedBacklinks;
+  }
+  
   const backlinkMap: BacklinkMap = {};
   
   // 1. 標準的なコレクション (scraps, articles)
@@ -32,6 +48,8 @@ export async function getAllBacklinks(): Promise<BacklinkMap> {
     await processPost(tweet.content, 'tweets', tweet.slug, tweet.title, backlinkMap);
   }
 
+  // Cache the result before returning
+  cachedBacklinks = backlinkMap;
   return backlinkMap;
 }
 
