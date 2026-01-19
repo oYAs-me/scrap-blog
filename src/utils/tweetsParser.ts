@@ -78,7 +78,11 @@ export async function getAllTweets(): Promise<TweetItem[]> {
           currentTweet.htmlContent = vfile.toString();
 
         } catch (error) {
-          // ... (エラーハンドリング)
+          console.error('[TweetsParser] Failed to parse tweet content.', {
+            fileSlug: file.slug,
+            contentPreview: currentTweet.content.slice(0, 100),
+            error,
+          });
           currentTweet.htmlContent = `<p style="color:red; font-size:0.8em;">Parse Error</p>${currentTweet.content}`;
         }
 
