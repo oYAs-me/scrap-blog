@@ -101,7 +101,7 @@ export async function getAllTweets(): Promise<TweetItem[]> {
         }
 
         // 必須プロパティが揃っているか確認してPush
-        if (currentTweet.id && currentTweet.date && currentTweet.originalFile) {
+        if (currentTweet.id && currentTweet.date && currentTweet.originalFile && currentTweet.title) {
            allTweets.push(currentTweet as TweetItem);
         }
       }
