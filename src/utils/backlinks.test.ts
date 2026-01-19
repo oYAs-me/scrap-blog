@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getAllBacklinks } from './backlinks';
+import { getAllBacklinks, clearBacklinksCache } from './backlinks';
 
 // モジュール全体のモック化
 vi.mock('astro:content', () => {
@@ -80,6 +80,7 @@ Link to tweet: [[tweets/20260101-0000]]`,
 describe('getAllBacklinks (Cross-Collection Links)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    clearBacklinksCache();
   });
 
   it('should detect all 9 combinations of links correctly', async () => {
