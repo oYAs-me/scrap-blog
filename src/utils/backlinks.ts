@@ -18,7 +18,7 @@ export async function getAllBacklinks(): Promise<BacklinkMap> {
   for (const collectionName of CONTENT_COLLECTIONS) {
     if (collectionName === 'tweets') continue; // ツイートは別処理
 
-    const posts = await getCollection(collectionName as any);
+    const posts = await getCollection(collectionName as 'articles' | 'scraps');
     
     for (const post of posts) {
       await processPost(post.body, collectionName, post.slug, post.data.title || post.slug, backlinkMap);
@@ -42,7 +42,6 @@ async function processPost(
   title: string,
   map: BacklinkMap
 ) {
-  const sourceSlug = `${collection}/${slug}`;
   const tree = processor.parse(markdownBody);
   const linkedSlugs = new Set<string>();
 

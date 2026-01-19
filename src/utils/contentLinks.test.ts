@@ -84,7 +84,7 @@ async function resolvePath(targetPath: string, sourceFile: string): Promise<{ ex
   for (const collection of CONTENT_COLLECTIONS) {
     const prefix = `/${collection}/`;
     if (targetPath.startsWith(prefix)) {
-      const slug = targetPath.slice(prefix.length).replace(~/$/,''); // 末尾スラッシュ除去
+      const slug = targetPath.slice(prefix.length).replace(/\/$/,''); // 末尾スラッシュ除去
       
       // TweetsはファイルパスとURLが直接対応しない場合があるが、
       // 簡易的なチェックとしてはファイル存在確認で代用するか、スキップする

@@ -109,7 +109,7 @@ export async function getAllTweets(): Promise<TweetItem[]> {
     };
 
     // 各行を解析してツイートを抽出
-    for (const [index, line] of lines.entries()) {
+    for (const [_, line] of lines.entries()) {
       const match = line.match(tweetRegex);
       
       if (match) {
