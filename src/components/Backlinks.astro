@@ -1,0 +1,52 @@
+---
+import type { BacklinkEntry } from '../types';
+
+interface Props {
+  backlinks: BacklinkEntry[];
+}
+
+const { backlinks } = Astro.props;
+---
+
+{backlinks && backlinks.length > 0 && (
+  <aside class="backlinks">
+    <h3>Links to this page</h3>
+    <ul>
+      {backlinks.map((link) => (
+        <li>
+          <a href={`/${link.collection}/${link.slug}`}>{link.title}</a>
+        </li>
+      ))}
+    </ul>
+  </aside>
+)}
+
+<style>
+  .backlinks {
+    margin-top: 4rem;
+    padding: 1.5rem;
+    background-color: var(--color-bg-secondary, #f8f9fa); /* 変数がなければフォールバック */
+    border-radius: 8px;
+  }
+  .backlinks h3 {
+    font-size: 1.1rem;
+    margin-top: 0;
+    margin-bottom: 0.8rem;
+    color: var(--color-text-muted, #666);
+  }
+  .backlinks ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .backlinks li {
+    margin-bottom: 0.5rem;
+  }
+  .backlinks a {
+    text-decoration: none;
+    color: var(--color-primary, #0056b3);
+  }
+  .backlinks a:hover {
+    text-decoration: underline;
+  }
+</style>

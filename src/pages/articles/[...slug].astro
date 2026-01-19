@@ -3,21 +3,31 @@
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Backlinks from '../../components/Backlinks.astro';
+import { getAllBacklinks } from '../../utils/backlinks';
+import type { BacklinkEntry } from '../../types';
 
 // 動的ルーティングのためのパス生成
 export async function getStaticPaths() {
   // articlesコレクションから全投稿を取得
   const posts = await getCollection('articles');
+  const allBacklinks = await getAllBacklinks();
+
   return posts.map(post => ({
     params: { slug: post.slug },
-    props: post,
+    props: { 
+      post,
+      backlinks: allBacklinks[`articles/${post.slug}`] || []
+    },
   }));
 }
 
-// Propsの型定義（明示的にarticlesコレクションのエントリ型を使用）
-type Props = CollectionEntry<'articles'>;
+interface Props {
+  post: CollectionEntry<'articles'>;
+  backlinks: BacklinkEntry[];
+}
 
-const post = Astro.props;
+const { post, backlinks } = Astro.props;
 const { Content } = await post.render();
 ---
 
@@ -41,5 +51,7 @@ const { Content } = await post.render();
     <div class="content">
       <Content />
     </div>
+
+    <Backlinks backlinks={backlinks} />
   </article>
 </BaseLayout>

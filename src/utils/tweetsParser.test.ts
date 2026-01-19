@@ -117,6 +117,29 @@ describe('getAllTweets', () => {
     expect(tweets[0].htmlContent).toContain('<em>Italic</em>');
   });
 
+  it('should generate correct ID and Title format (yyyy-mm-dd-hh-mm-seq)', async () => {
+    mockCollectionData = [{
+      slug: 'tweets/2026-01-09',
+      body: '- 10:00 First\n- 10:00 Second'
+    }];
+
+    const tweets = await getAllTweets();
+    expect(tweets).toHaveLength(2);
+    
+    // 降順ソートなので Second (sequence 02) が先、First (sequence 01) が後
+    const t1 = tweets[1]; // First (Older in file)
+    const t2 = tweets[0]; // Second (Newer in file, has suffix)
+
+    expect(t1.content).toBe('First');
+    expect(t1.id).toBe('20260109-1000');
+    expect(t1.title).toBe('tweet: 20260109-1000');
+    expect(t1.slug).toBe('20260109-1000');
+
+    expect(t2.content).toBe('Second');
+    expect(t2.id).toBe('20260109-1000-1');
+    expect(t2.title).toBe('tweet: 20260109-1000-1');
+  });
+
   it('should skip invalid date files and warn', async () => {
     mockCollectionData = [
       { slug: 'tweets/invalid-date-file', body: '- 10:00 Content' },
