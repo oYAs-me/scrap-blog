@@ -38,7 +38,9 @@ function generateTweetId(date: Date, sequence: number): string {
 // Group 3: ツイートの本文（実際の内容部分）※optional
 const tweetRegex = /^- (?:(\[[ xX]?\]) )?(?:(\d{1,2}:\d{2}(?::\d{2})?) ?)?(.*)$/;
 
-// ツイートを処理してリストに追加する関数（独立化）
+/**
+ * ツイートを処理してdestinationListに追加するヘルパー関数
+ */
 async function processAndPushTweet(
   tweet: Partial<TweetItem>,
   fileSlug: string,
@@ -171,8 +173,7 @@ export async function getAllTweets(): Promise<TweetItem[]> {
   }
 
   // 新しい順（降順）にソート
-  // NOTE: slug は generateTweetId() で `YYYYMMDD-HHmm[-枝番]` 形式で生成されるため、
-  // 文字列ソートしても日付の降順と一致する。念のため slug が同一の場合は date も比較する。
+  // NOTE: slug は generateTweetId() で `YYYYMMDD-HHmm[-枝番]` 形式で生成されるため、文字列ソートしても日付の降順と一致する。念のため slug が同一の場合は date も比較する。
   return allTweets.sort((a, b) => {
     const slugCompare = b.slug.localeCompare(a.slug); // IDベースでソート
     if (slugCompare !== 0) return slugCompare;
