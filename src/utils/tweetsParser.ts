@@ -38,6 +38,61 @@ function generateTweetId(date: Date, sequence: number): string {
 // Group 3: ツイートの本文（実際の内容部分）※optional
 const tweetRegex = /^- (?:(\[[ xX]?\]) )?(?:(\d{1,2}:\d{2}(?::\d{2})?) ?)?(.*)$/;
 
+// ツイートを処理してリストに追加する関数（独立化）
+async function processAndPushTweet(
+  tweet: Partial<TweetItem>,
+  fileSlug: string,
+  timeSequenceMap: Record<string, number>,
+  destinationList: TweetItem[]
+): Promise<void> {
+  // コンテンツが存在する場合のみ処理
+  if (!tweet || !tweet.content || tweet.content.trim().length === 0) {
+    return;
+  }
+
+  // [deleted::...] タグがある場合は追加しない
+  if (/\[deleted::\d+\]/.test(tweet.content)) {
+    return;
+  }
+
+  try {
+    // 変換処理を実行
+    const vfile = await processor.process(tweet.content);
+    tweet.htmlContent = vfile.toString();
+
+  } catch (error) {
+    console.error('[TweetsParser] Failed to parse tweet content.', {
+      fileSlug: fileSlug,
+      contentPreview: tweet.content.slice(0, 100),
+      error,
+    });
+    tweet.htmlContent = `<p style="color:red; font-size:0.8em;">Parse Error</p>${tweet.content}`;
+  }
+
+  // IDとTitleの生成
+  if (tweet.date) {
+      const h = String(tweet.date.getHours()).padStart(2, '0');
+      const m = String(tweet.date.getMinutes()).padStart(2, '0');
+      const timeKey = `${h}:${m}`;
+      
+      // シーケンス番号を取得・更新
+      const seq = (timeSequenceMap[timeKey] || 0) + 1;
+      timeSequenceMap[timeKey] = seq;
+
+      const newId = generateTweetId(tweet.date, seq);
+      tweet.id = newId;
+      // slugには "tweets/" プレフィックスを付けない (backlinks.ts等での扱い統一のため)
+      // ただし、Astroのルーティングで衝突しないようユニークである必要がある
+      tweet.slug = newId; 
+      tweet.title = `tweet: ${newId}`;
+  }
+
+  // 必須プロパティが揃っているか確認してPush
+  if (tweet.id && tweet.date && tweet.originalFile && tweet.title) {
+      destinationList.push(tweet as TweetItem);
+  }
+}
+
 /**
  *  全ツイートを取得し、TweetItem配列として返す
  */
@@ -68,62 +123,16 @@ export async function getAllTweets(): Promise<TweetItem[]> {
     // ID重複回避のためのシーケンス管理: { "HH:MM": count }
     const timeSequenceMap: Record<string, number> = {};
 
-    // ツイートをリストに追加する関数（共通化）
-    const pushCurrentTweet = async () => {
-      // コンテンツが存在する場合のみ処理
-      if (currentTweet && currentTweet.content && currentTweet.content.trim().length > 0) {
-        // [deleted::...] タグがある場合は追加しない
-        if (/\[deleted::\d+\]/.test(currentTweet.content)) {
-          currentTweet = null;
-          return;
-        }
-
-        try {
-          // 変換処理を実行
-          const vfile = await processor.process(currentTweet.content);
-          currentTweet.htmlContent = vfile.toString();
-
-        } catch (error) {
-          console.error('[TweetsParser] Failed to parse tweet content.', {
-            fileSlug: file.slug,
-            contentPreview: currentTweet.content.slice(0, 100),
-            error,
-          });
-          currentTweet.htmlContent = `<p style="color:red; font-size:0.8em;">Parse Error</p>${currentTweet.content}`;
-        }
-
-        // IDとTitleの生成
-        if (currentTweet.date) {
-           const h = String(currentTweet.date.getHours()).padStart(2, '0');
-           const m = String(currentTweet.date.getMinutes()).padStart(2, '0');
-           const timeKey = `${h}:${m}`;
-           
-           // シーケンス番号を取得・更新
-           const seq = (timeSequenceMap[timeKey] || 0) + 1;
-           timeSequenceMap[timeKey] = seq;
-
-           const newId = generateTweetId(currentTweet.date, seq);
-           currentTweet.id = newId;
-           // slugには "tweets/" プレフィックスを付けない (backlinks.ts等での扱い統一のため)
-           // ただし、Astroのルーティングで衝突しないようユニークである必要がある
-           currentTweet.slug = newId; 
-           currentTweet.title = `tweet: ${newId}`;
-        }
-
-        // 必須プロパティが揃っているか確認してPush
-        if (currentTweet.id && currentTweet.date && currentTweet.originalFile && currentTweet.title) {
-           allTweets.push(currentTweet as TweetItem);
-        }
-      }
-      currentTweet = null;
-    };
-
     // 各行を解析してツイートを抽出
     for (const [_, line] of lines.entries()) {
       const match = line.match(tweetRegex);
       
       if (match) {
-        await pushCurrentTweet(); // 前のツイートを保存
+        // 前のツイートを保存
+        if (currentTweet) {
+          await processAndPushTweet(currentTweet, file.slug, timeSequenceMap, allTweets);
+          currentTweet = null;
+        }
 
         const checkbox = match[1];
         const timeStr = match[2];
@@ -141,7 +150,7 @@ export async function getAllTweets(): Promise<TweetItem[]> {
             tweetDate.setHours(0, 0, 0); 
         }
 
-        // IDは pushCurrentTweet で確定させるためここでは仮置きもしない
+        // 新しいツイートオブジェクトを作成
         currentTweet = {
           content: content,
           htmlContent: '',
@@ -154,7 +163,11 @@ export async function getAllTweets(): Promise<TweetItem[]> {
         }
       }
     }
-    await pushCurrentTweet(); // 末尾処理
+    // 末尾処理
+    if (currentTweet) {
+      await processAndPushTweet(currentTweet, file.slug, timeSequenceMap, allTweets);
+      currentTweet = null;
+    }
   }
 
   // 新しい順（降順）にソート
