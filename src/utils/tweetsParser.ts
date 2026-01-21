@@ -72,6 +72,12 @@ export async function getAllTweets(): Promise<TweetItem[]> {
     const pushCurrentTweet = async () => {
       // コンテンツが存在する場合のみ処理
       if (currentTweet && currentTweet.content && currentTweet.content.trim().length > 0) {
+        // [deleted::...] タグがある場合は追加しない
+        if (/\[deleted::\d+\]/.test(currentTweet.content)) {
+          currentTweet = null;
+          return;
+        }
+
         try {
           // 変換処理を実行
           const vfile = await processor.process(currentTweet.content);

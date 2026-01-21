@@ -169,4 +169,17 @@ describe('getAllTweets', () => {
     expect(tweet1?.content).toContain('Additional text');
     expect(tweet1?.content).toContain('This line does not start with dash');
   });
+
+  it('should exclude tweets with [deleted::...] tag', async () => {
+    mockCollectionData = [{
+      slug: 'tweets/2026-01-10',
+      body: '- 10:00 Valid tweet\n- 11:00 Deleted tweet [deleted::20260110110000]\n- 12:00 Another valid tweet'
+    }];
+
+    const tweets = await getAllTweets();
+    expect(tweets).toHaveLength(2);
+    expect(tweets.find(t => t.content.includes('Deleted tweet'))).toBeUndefined();
+    expect(tweets.find(t => t.content.includes('Valid tweet'))).toBeDefined();
+    expect(tweets.find(t => t.content.includes('Another valid tweet'))).toBeDefined();
+  });
 });
