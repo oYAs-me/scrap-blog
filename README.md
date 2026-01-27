@@ -10,6 +10,25 @@ A personal scrapbox-like log or blog and digital garden built with Astro. / Astr
 - **Deployment:** Linux / Nginx via GitHub Actions
 - **Concept:** Digital Garden (Seed -> Bud -> Evergreen) ?
 
+## 💻 Development Setup
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/oYAs-me/scrap-blog.git
+cd scrap-blog
+
+# 2. Initialize Submodules (Important!)
+# This project manages content in a separate private repository.
+# You need to initialize submodules to fetch the content.
+git submodule update --init --recursive
+
+# 3. Install Dependencies
+npm install
+
+# 4. Start Development Server
+npm run dev
+```
+
 ## 機能
 
 ### A. Blog/GitHubモード (Articles)
