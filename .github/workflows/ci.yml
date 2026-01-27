@@ -11,8 +11,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_YHOP }}
+
+    - name: Add host key
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan yhop.net >> ~/.ssh/known_hosts
+
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
